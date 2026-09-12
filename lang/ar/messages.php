@@ -919,5 +919,8 @@ return [
     'users_permission_preset_label' => 'قالب صلاحيات جاهز (اختياري)',
     'users_permission_preset_placeholder' => '-- اختر قالباً أو خصص يدوياً --',
     'users_permission_preset_hint' => 'اختيار قالب يعبئ الصلاحيات المناسبة تلقائياً، ويمكنك تعديلها بعد ذلك يدوياً.',
+    'guardian_account_already_exists_error' => 'يوجد حساب دخول مرتبط بهذا الولي بالفعل.',
+    'guardians_create_account_button' => 'إنشاء حساب دخول لولي الأمر',
+    'guardians_no_account_note' => 'لا يوجد حساب دخول لبوابة الأولياء مرتبط بهذا الولي بعد.',
 
     ];

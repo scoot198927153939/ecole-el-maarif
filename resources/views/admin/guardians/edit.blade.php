@@ -89,6 +89,16 @@
                             {{ __('messages.guardians_regenerate_password_button') }}
                         </button>
                     </form>
+                @else
+                    <div class="mt-4 pt-4 border-t">
+                        <p class="text-sm text-gray-500 mb-2">{{ __('messages.guardians_no_account_note') }}</p>
+                        <form method="POST" action="{{ route('admin.guardians.create-account', $guardian) }}">
+                            @csrf
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                                {{ __('messages.guardians_create_account_button') }}
+                            </button>
+                        </form>
+                    </div>
                 @endif
             </div>
         </div>

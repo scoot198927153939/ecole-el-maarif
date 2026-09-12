@@ -35,18 +35,7 @@ class GuardianController extends Controller
 
         $guardian = Guardian::create($validated);
 
-        $plainPassword = Str::password(10, symbols: false);
-
-        $user = User::create([
-            'name' => $guardian->name,
-            'email' => 'guardian'.$guardian->id.'@parents.local',
-            'phone' => $guardian->phone1,
-            'password' => bcrypt($plainPassword),
-            'role' => 'guardian',
-            'locale' => app()->getLocale(),
-        ]);
-
-        $guardian->update(['user_id' => $user->id]);
+        $plainPassword = $this->createLoginAccount($guardian);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -108,11 +97,43 @@ class GuardianController extends Controller
         ]);
     }
 
+    public function createAccount(Guardian $guardian)
+    {
+        if ($guardian->user) {
+            return back()->with('error', __('messages.guardian_account_already_exists_error'));
+        }
+
+        $plainPassword = $this->createLoginAccount($guardian);
+
+        return back()->with('guardian_credentials', [
+            'phone' => $guardian->phone1,
+            'password' => $plainPassword,
+        ]);
+    }
+
     public function destroy(Guardian $guardian)
     {
         $guardian->user?->delete();
         $guardian->delete();
         return redirect()->route('admin.guardians.index')
             ->with('success', __('messages.flash_guardian_deleted'));
+    }
+
+    private function createLoginAccount(Guardian $guardian): string
+    {
+        $plainPassword = Str::password(10, symbols: false);
+
+        $user = User::create([
+            'name' => $guardian->name,
+            'email' => 'guardian'.$guardian->id.'@parents.local',
+            'phone' => $guardian->phone1,
+            'password' => bcrypt($plainPassword),
+            'role' => 'guardian',
+            'locale' => app()->getLocale(),
+        ]);
+
+        $guardian->update(['user_id' => $user->id]);
+
+        return $plainPassword;
     }
 }

@@ -128,6 +128,7 @@ Route::post('/treasury/sources/{source}/transactions', [TreasuryController::clas
 
 Route::resource('guardians', GuardianController::class)->except(['show']);
 Route::post('/guardians/{guardian}/regenerate-password', [GuardianController::class, 'regeneratePassword'])->name('guardians.regenerate-password');
+Route::post('/guardians/{guardian}/create-account', [GuardianController::class, 'createAccount'])->name('guardians.create-account');
 
 Route::resource('tuition-fees', TuitionFeeController::class)->except(['show']);
 Route::get('/fee-payments', [FeePaymentController::class, 'index'])->name('fee-payments.index');

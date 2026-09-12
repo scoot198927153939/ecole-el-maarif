@@ -919,5 +919,8 @@ return [
     'users_permission_preset_label' => 'Modèle de permissions prédéfini (facultatif)',
     'users_permission_preset_placeholder' => '-- Choisir un modèle ou personnaliser manuellement --',
     'users_permission_preset_hint' => 'Choisir un modèle remplit automatiquement les permissions appropriées ; vous pouvez ensuite les modifier manuellement.',
+    'guardian_account_already_exists_error' => 'Un compte de connexion est déjà associé à ce tuteur.',
+    'guardians_create_account_button' => 'Créer un compte de connexion pour le tuteur',
+    'guardians_no_account_note' => 'Aucun compte de connexion au portail des parents n\'est encore associé à ce tuteur.',
 
     ];
