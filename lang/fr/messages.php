@@ -922,5 +922,13 @@ return [
     'guardian_account_already_exists_error' => 'Un compte de connexion est déjà associé à ce tuteur.',
     'guardians_create_account_button' => 'Créer un compte de connexion pour le tuteur',
     'guardians_no_account_note' => 'Aucun compte de connexion au portail des parents n\'est encore associé à ce tuteur.',
+    'schedules_master_link' => 'Emploi du temps général de toutes les classes',
+    'schedules_col_session_count' => 'Nombre de séances',
+    'schedules_show_title_prefix' => 'Emploi du temps —',
+    'schedules_back_link' => '→ Retour à la liste des classes',
+    'schedules_no_assignments_note' => 'Aucune matière n\'est encore associée à cette classe. Ajoutez d\'abord des affectations depuis la page "Affectations".',
+    'schedules_slot_empty_option' => '-- Vide --',
+    'schedules_grid_hint' => 'Choisissez une matière et un enseignant pour chaque case afin de l\'ajouter directement à l\'emploi du temps, ou choisissez "Vide" pour la supprimer.',
+    'schedules_master_title' => 'Emploi du temps général de toutes les classes',
 
     ];

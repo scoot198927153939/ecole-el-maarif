@@ -922,5 +922,13 @@ return [
     'guardian_account_already_exists_error' => 'يوجد حساب دخول مرتبط بهذا الولي بالفعل.',
     'guardians_create_account_button' => 'إنشاء حساب دخول لولي الأمر',
     'guardians_no_account_note' => 'لا يوجد حساب دخول لبوابة الأولياء مرتبط بهذا الولي بعد.',
+    'schedules_master_link' => 'الجدول العام لجميع الأقسام',
+    'schedules_col_session_count' => 'عدد الحصص',
+    'schedules_show_title_prefix' => 'الجدول الزمني —',
+    'schedules_back_link' => '→ رجوع لقائمة الأقسام',
+    'schedules_no_assignments_note' => 'لا توجد مواد مرتبطة بهذا القسم بعد. أضف تكليفات أولاً من صفحة "التكليفات".',
+    'schedules_slot_empty_option' => '-- فارغة --',
+    'schedules_grid_hint' => 'اختر مادة وأستاذاً لأي خانة لإضافتها للجدول مباشرة، أو اختر "فارغة" لحذفها.',
+    'schedules_master_title' => 'الجدول العام لجميع الأقسام',
 
     ];

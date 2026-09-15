@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassRoom;
 use App\Models\ClassSubjectTeacher;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
@@ -21,71 +22,104 @@ class ScheduleController extends Controller
         ];
     }
 
+    // الأوقات الثابتة الثلاثة لكل يوم دراسي، حسب رقم الحصة
+    private function sessionTimes(): array
+    {
+        return [
+            1 => ['08:00', '10:00'],
+            2 => ['10:00', '12:00'],
+            3 => ['12:00', '14:00'],
+        ];
+    }
+
+    // صفحة اختيار القسم لتعديل جدوله
     public function index()
     {
-        $schedules = Schedule::with(['assignment.classRoom', 'assignment.subject', 'assignment.teacher'])
-            ->orderBy('day_of_week')
-            ->orderBy('session_number')
+        $classes = ClassRoom::with('academicYear')
+            ->withCount('schedules')
+            ->orderBy('name')
             ->get();
 
-        $days = $this->days();
-
-        return view('admin.schedules.index', compact('schedules', 'days'));
+        return view('admin.schedules.index', compact('classes'));
     }
 
-    public function create()
+    // شبكة الجدول الأسبوعي لقسم واحد (٣ حصص × ٦ أيام)
+    public function show(ClassRoom $class)
     {
-        $assignments = ClassSubjectTeacher::with(['classRoom', 'subject', 'teacher'])->get();
         $days = $this->days();
+        $sessionTimes = $this->sessionTimes();
 
-        return view('admin.schedules.create', compact('assignments', 'days'));
+        $assignments = ClassSubjectTeacher::with(['subject', 'teacher'])
+            ->where('class_id', $class->id)
+            ->get();
+
+        $schedules = Schedule::with(['assignment.subject', 'assignment.teacher'])
+            ->whereHas('assignment', fn ($q) => $q->where('class_id', $class->id))
+            ->get()
+            ->keyBy(fn ($s) => $s->day_of_week.'-'.$s->session_number);
+
+        return view('admin.schedules.show', compact('class', 'days', 'sessionTimes', 'assignments', 'schedules'));
     }
 
-    public function store(Request $request)
+    // تعيين أو تفريغ خلية واحدة في شبكة القسم (يوم + رقم حصة)
+    public function storeSlot(Request $request, ClassRoom $class)
     {
         $validated = $request->validate([
             'day_of_week' => 'required|integer|between:1,6',
             'session_number' => 'required|integer|between:1,3',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'class_subject_teacher_id' => 'required|exists:class_subject_teacher,id',
+            'class_subject_teacher_id' => 'nullable|exists:class_subject_teacher,id',
         ]);
 
-        Schedule::create($validated);
+        $existing = Schedule::whereHas('assignment', fn ($q) => $q->where('class_id', $class->id))
+            ->where('day_of_week', $validated['day_of_week'])
+            ->where('session_number', $validated['session_number'])
+            ->first();
 
-        return redirect()->route('admin.schedules.index')
-            ->with('success', __('messages.flash_schedule_created'));
+        if (empty($validated['class_subject_teacher_id'])) {
+            $existing?->delete();
+
+            return back()->with('success', __('messages.flash_schedule_deleted'));
+        }
+
+        $belongsToClass = ClassSubjectTeacher::where('id', $validated['class_subject_teacher_id'])
+            ->where('class_id', $class->id)
+            ->exists();
+
+        abort_unless($belongsToClass, 403);
+
+        [$start, $end] = $this->sessionTimes()[$validated['session_number']];
+
+        if ($existing) {
+            $existing->update([
+                'class_subject_teacher_id' => $validated['class_subject_teacher_id'],
+                'start_time' => $start,
+                'end_time' => $end,
+            ]);
+        } else {
+            Schedule::create([
+                'day_of_week' => $validated['day_of_week'],
+                'session_number' => $validated['session_number'],
+                'start_time' => $start,
+                'end_time' => $end,
+                'class_subject_teacher_id' => $validated['class_subject_teacher_id'],
+            ]);
+        }
+
+        return back()->with('success', __('messages.flash_schedule_updated'));
     }
 
-    public function edit(Schedule $schedule)
+    // الجدول العام: كل الأقسام مجتمعة في صفحة واحدة
+    public function master()
     {
-        $assignments = ClassSubjectTeacher::with(['classRoom', 'subject', 'teacher'])->get();
         $days = $this->days();
+        $sessionTimes = $this->sessionTimes();
 
-        return view('admin.schedules.edit', compact('schedule', 'assignments', 'days'));
-    }
+        $classes = ClassRoom::with('academicYear')->orderBy('name')->get();
 
-    public function update(Request $request, Schedule $schedule)
-    {
-        $validated = $request->validate([
-            'day_of_week' => 'required|integer|between:1,6',
-            'session_number' => 'required|integer|between:1,3',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'class_subject_teacher_id' => 'required|exists:class_subject_teacher,id',
-        ]);
+        $schedules = Schedule::with(['assignment.classRoom', 'assignment.subject', 'assignment.teacher'])
+            ->get()
+            ->keyBy(fn ($s) => $s->assignment->class_id.'-'.$s->day_of_week.'-'.$s->session_number);
 
-        $schedule->update($validated);
-
-        return redirect()->route('admin.schedules.index')
-            ->with('success', __('messages.flash_schedule_updated'));
-    }
-
-    public function destroy(Schedule $schedule)
-    {
-        $schedule->delete();
-
-        return redirect()->route('admin.schedules.index')
-            ->with('success', __('messages.flash_schedule_deleted'));
+        return view('admin.schedules.master', compact('classes', 'days', 'sessionTimes', 'schedules'));
     }
 }

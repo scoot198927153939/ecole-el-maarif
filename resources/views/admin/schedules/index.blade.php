@@ -14,64 +14,31 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold">{{ __('messages.schedules_list_title') }}</h3>
-                    <a href="{{ route('admin.schedules.create') }}"
-                       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        {{ __('messages.schedules_add_button') }}
-                    </a>
-                </div>
-
-                <table class="w-full text-right border-collapse">
-                    <thead>
-                        <tr class="border-b bg-gray-50">
-                            <th class="p-2">{{ __('messages.day') }}</th>
-                            <th class="p-2">{{ __('messages.session_number') }}</th>
-                            <th class="p-2">{{ __('messages.time') }}</th>
-                            <th class="p-2">{{ __('messages.class') }}</th>
-                            <th class="p-2">{{ __('messages.subject') }}</th>
-                            <th class="p-2">{{ __('messages.teacher') }}</th>
-                            <th class="p-2">{{ __('messages.actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($schedules as $item)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2">{{ $days[$item->day_of_week] }}</td>
-                                <td class="p-2">{{ $item->session_number }}</td>
-                                <td class="p-2">
-                                    <span dir="ltr" style="unicode-bidi: embed;">
-                                        {{ \Carbon\Carbon::parse($item->start_time)->format('H:i') }}
-                                        -
-                                        {{ \Carbon\Carbon::parse($item->end_time)->format('H:i') }}
-                                    </span>
-                                </td>
-                                <td class="p-2">{{ $item->assignment->classRoom->name }}</td>
-                                <td class="p-2">{{ $item->assignment->subject->name }}</td>
-                                <td class="p-2">{{ $item->assignment->teacher->first_name }} {{ $item->assignment->teacher->last_name }}</td>
-                                <td class="p-2 space-x-2 space-x-reverse">
-                                    <a href="{{ route('admin.schedules.edit', $item) }}"
-                                       class="text-blue-600 hover:underline">{{ __('messages.edit') }}</a>
-                                    <form action="{{ route('admin.schedules.destroy', $item) }}"
-                                          method="POST" class="inline"
-                                          onsubmit="return confirm('{{ addslashes(__('messages.confirm_delete')) }}');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline">{{ __('messages.delete') }}</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="p-4 text-center text-gray-500">
-                                    {{ __('messages.schedules_empty') }}
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">{{ __('messages.schedules_list_title') }}</h3>
+                <a href="{{ route('admin.schedules.master') }}"
+                   class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">
+                    {{ __('messages.schedules_master_link') }}
+                </a>
             </div>
+
+            @if ($classes->isEmpty())
+                <div class="bg-white shadow-sm sm:rounded-lg p-6 text-center text-gray-500">
+                    {{ __('messages.schedules_empty') }}
+                </div>
+            @else
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach ($classes as $class)
+                        <a href="{{ route('admin.schedules.show', $class) }}"
+                           class="group bg-white border border-gray-100 shadow-sm rounded-xl p-5 hover:shadow-lg hover:border-blue-200 hover:-translate-y-0.5 transition-all">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">🕐</div>
+                            <h4 class="font-bold text-gray-800">{{ $class->name }}</h4>
+                            <p class="text-gray-500 text-sm mt-1">{{ $class->academicYear->name ?? '-' }}</p>
+                            <p class="text-gray-400 text-xs mt-2">{{ __('messages.schedules_col_session_count') }}: {{ $class->schedules_count }}</p>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

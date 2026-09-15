@@ -115,7 +115,10 @@ Route::get('/students-rosters/{class}/export/pdf', [\App\Http\Controllers\PdfCon
     Route::resource('teachers', \App\Http\Controllers\Admin\TeacherController::class)->only(['index', 'edit', 'update']);
     Route::get('/classes/{class}/subjects-json', [AssignmentController::class, 'subjectsForClass'])->name('classes.subjects-json');
 
-    Route::resource('schedules', ScheduleController::class)->except(['show']);
+    Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/schedules/master', [ScheduleController::class, 'master'])->name('schedules.master');
+    Route::get('/schedules/{class}', [ScheduleController::class, 'show'])->name('schedules.show');
+    Route::post('/schedules/{class}/slot', [ScheduleController::class, 'storeSlot'])->name('schedules.slot.store');
 
     Route::get('/attendance-alerts', [AttendanceAlertController::class, 'index'])->name('attendance-alerts.index');
 
