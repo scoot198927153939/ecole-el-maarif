@@ -32,6 +32,11 @@ class ClassRoom extends Model
         return $this->hasMany(ClassSubjectTeacher::class, 'class_id');
     }
 
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class, 'class_id');
+    }
+
     public function schedules()
     {
         return $this->hasManyThrough(Schedule::class, ClassSubjectTeacher::class, 'class_id', 'class_subject_teacher_id');

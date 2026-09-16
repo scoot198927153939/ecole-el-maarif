@@ -930,5 +930,13 @@ return [
     'schedules_slot_empty_option' => '-- فارغة --',
     'schedules_grid_hint' => 'اختر مادة وأستاذاً لأي خانة لإضافتها للجدول مباشرة، أو اختر "فارغة" لحذفها.',
     'schedules_master_title' => 'الجدول العام لجميع الأقسام',
+    'assessments_col_count' => 'عدد الاختبارات',
+    'assessments_back_link' => '→ رجوع لقائمة الأقسام',
+    'assessments_bulk_all_button' => 'توليد اختبارات لكل المواد',
+    'assessments_bulk_all_title' => 'توليد اختبارات لكل المواد',
+    'assessments_bulk_all_description' => 'يُنشئ هذا اختبارات وامتحان كل فصل دراسي (١، ٢، ٣) تلقائياً، لكل مادة مطبّقة على مستوى هذا القسم دفعة واحدة. المواد التي لديها اختبارات مسبقاً لهذه السنة تُتجاوز تلقائياً.',
+    'assessments_bulk_all_subjects_label' => 'المواد التي سيتم إنشاء اختبارات لها',
+    'assessments_bulk_all_no_subjects' => 'لا توجد مواد مطبّقة على مستوى هذا القسم بعد. أضفها من صفحة "المواد والضوارب" أولاً.',
+    'flash_assessment_bulk_all_created' => 'تم إنشاء :count اختبار وامتحان بنجاح. تم تجاوز :skipped مادة لديها اختبارات مسبقاً.',
 
     ];

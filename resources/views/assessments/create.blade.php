@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('messages.assessments_create_title') }}
+            {{ __('messages.assessments_create_title') }} — {{ $class->name }}
         </h2>
     </x-slot>
 
@@ -9,7 +9,7 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
 
-                <form method="POST" action="{{ route('assessments.store') }}">
+                <form method="POST" action="{{ route('assessments.store', $class) }}">
                     @csrf
 
                     <div class="mb-4">
@@ -52,19 +52,6 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block font-medium mb-1">{{ __('messages.class') }}</label>
-                        <select name="class_id" class="w-full border rounded p-2" required>
-                            <option value="">{{ __('messages.assignments_select_class_placeholder') }}</option>
-                            @foreach ($classes as $classItem)
-                                <option value="{{ $classItem->id }}" {{ old('class_id') == $classItem->id ? 'selected' : '' }}>
-                                    {{ $classItem->name }} ({{ $classItem->grade_level }} - {{ $classItem->academicYear->name }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('class_id') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="mb-4">
                         <label class="block font-medium mb-1">{{ __('messages.academic_year') }}</label>
                         <select name="academic_year_id" class="w-full border rounded p-2" required>
                             <option value="">{{ __('messages.select_academic_year_placeholder') }}</option>
@@ -95,7 +82,7 @@
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                             {{ __('messages.save') }}
                         </button>
-                        <a href="{{ route('assessments.index') }}"
+                        <a href="{{ route('assessments.class.show', $class) }}"
                            class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
                             {{ __('messages.cancel') }}
                         </a>

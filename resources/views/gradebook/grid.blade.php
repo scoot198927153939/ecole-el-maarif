@@ -21,7 +21,7 @@
             @if ($assessments->isEmpty())
                 <div class="bg-white shadow-sm rounded-lg p-6 text-center text-gray-500">
                     {{ __('messages.gradebook_no_assessments_empty') }}
-                    <a href="{{ route('assessments.bulk-create') }}" class="text-blue-600 hover:underline">
+                    <a href="{{ route('assessments.class.show', $class) }}" class="text-blue-600 hover:underline">
                         {{ __('messages.gradebook_create_now_link') }}
                     </a>
                 </div>

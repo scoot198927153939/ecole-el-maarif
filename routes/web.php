@@ -165,9 +165,15 @@ Route::middleware(['auth', 'admin_or_teacher'])->group(function () {
     Route::get('/gradebook/{class}/{subject}', [GradeBookController::class, 'grid'])->name('gradebook.grid');
     Route::post('/gradebook/{class}/{subject}', [GradeBookController::class, 'store'])->name('gradebook.store');
 
-    Route::get('/assessments/bulk-create', [AssessmentController::class, 'bulkCreate'])->name('assessments.bulk-create');
-    Route::post('/assessments/bulk-store', [AssessmentController::class, 'bulkStore'])->name('assessments.bulk-store');
-    Route::resource('assessments', AssessmentController::class)->except(['show']);
+    Route::get('/assessments', [AssessmentController::class, 'classesIndex'])->name('assessments.index');
+    Route::get('/assessments/{class}', [AssessmentController::class, 'forClass'])->name('assessments.class.show');
+    Route::get('/assessments/{class}/create', [AssessmentController::class, 'create'])->name('assessments.create');
+    Route::post('/assessments/{class}', [AssessmentController::class, 'store'])->name('assessments.store');
+    Route::get('/assessments/{class}/bulk-all', [AssessmentController::class, 'bulkCreateAll'])->name('assessments.bulk-all.create');
+    Route::post('/assessments/{class}/bulk-all', [AssessmentController::class, 'bulkStoreAll'])->name('assessments.bulk-all.store');
+    Route::get('/assessments/entry/{assessment}/edit', [AssessmentController::class, 'edit'])->name('assessments.edit');
+    Route::put('/assessments/entry/{assessment}', [AssessmentController::class, 'update'])->name('assessments.update');
+    Route::delete('/assessments/entry/{assessment}', [AssessmentController::class, 'destroy'])->name('assessments.destroy');
 
     Route::get('/assessments/{assessment}/grades', [GradeController::class, 'index'])
         ->name('grades.index');

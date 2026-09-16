@@ -930,5 +930,13 @@ return [
     'schedules_slot_empty_option' => '-- Vide --',
     'schedules_grid_hint' => 'Choisissez une matière et un enseignant pour chaque case afin de l\'ajouter directement à l\'emploi du temps, ou choisissez "Vide" pour la supprimer.',
     'schedules_master_title' => 'Emploi du temps général de toutes les classes',
+    'assessments_col_count' => 'Nombre d\'évaluations',
+    'assessments_back_link' => '→ Retour à la liste des classes',
+    'assessments_bulk_all_button' => 'Générer les évaluations pour toutes les matières',
+    'assessments_bulk_all_title' => 'Générer les évaluations pour toutes les matières',
+    'assessments_bulk_all_description' => 'Ceci crée automatiquement les devoirs et l\'examen de chaque trimestre (1, 2, 3), pour chaque matière appliquée au niveau de cette classe, en une seule fois. Les matières ayant déjà des évaluations pour cette année sont automatiquement ignorées.',
+    'assessments_bulk_all_subjects_label' => 'Matières pour lesquelles des évaluations seront créées',
+    'assessments_bulk_all_no_subjects' => 'Aucune matière n\'est encore appliquée au niveau de cette classe. Ajoutez-en d\'abord depuis la page "Matières et coefficients".',
+    'flash_assessment_bulk_all_created' => ':count évaluations créées avec succès. :skipped matière(s) ignorée(s) car elles avaient déjà des évaluations.',
 
     ];
