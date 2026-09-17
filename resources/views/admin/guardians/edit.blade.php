@@ -8,15 +8,6 @@
     <div class="py-12" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
 
-            @if (session('guardian_credentials'))
-                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-900 rounded-lg">
-                    <p class="font-bold mb-2">{{ __('messages.guardian_credentials_flash_title') }}</p>
-                    <p>{{ __('messages.guardian_credentials_phone_label') }}: <span dir="ltr" class="font-mono font-bold">{{ session('guardian_credentials')['phone'] }}</span></p>
-                    <p>{{ __('messages.guardian_credentials_password_label') }}: <span dir="ltr" class="font-mono font-bold">{{ session('guardian_credentials')['password'] }}</span></p>
-                    <p class="text-sm text-blue-700 mt-2">{{ __('messages.guardian_credentials_note') }}</p>
-                </div>
-            @endif
-
             @if (session('error'))
                 <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">{{ session('error') }}</div>
             @endif
@@ -69,6 +60,26 @@
                         @error('address') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">
+                            {{ __('messages.guardians_password_label') }}
+                            @unless ($guardian->user) <span class="text-red-600">*</span> @endunless
+                        </label>
+                        <input type="text" name="password" dir="ltr"
+                               placeholder="{{ $guardian->user ? __('messages.guardians_password_leave_blank_placeholder') : '' }}"
+                               class="w-full border rounded-lg p-2" minlength="6" {{ $guardian->user ? '' : 'required' }}>
+                        @error('password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">
+                            {{ __('messages.guardians_password_confirmation_label') }}
+                            @unless ($guardian->user) <span class="text-red-600">*</span> @endunless
+                        </label>
+                        <input type="text" name="password_confirmation" dir="ltr"
+                               class="w-full border rounded-lg p-2" minlength="6" {{ $guardian->user ? '' : 'required' }}>
+                    </div>
+
                     <div class="flex gap-2">
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                             {{ __('messages.update') }}
@@ -79,27 +90,6 @@
                         </a>
                     </div>
                 </form>
-
-                @if ($guardian->user)
-                    <form method="POST" action="{{ route('admin.guardians.regenerate-password', $guardian) }}"
-                          class="mt-4 pt-4 border-t"
-                          onsubmit="return confirm('{{ addslashes(__('messages.guardians_regenerate_password_confirm')) }}');">
-                        @csrf
-                        <button type="submit" class="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg hover:bg-amber-200 text-sm">
-                            {{ __('messages.guardians_regenerate_password_button') }}
-                        </button>
-                    </form>
-                @else
-                    <div class="mt-4 pt-4 border-t">
-                        <p class="text-sm text-gray-500 mb-2">{{ __('messages.guardians_no_account_note') }}</p>
-                        <form method="POST" action="{{ route('admin.guardians.create-account', $guardian) }}">
-                            @csrf
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
-                                {{ __('messages.guardians_create_account_button') }}
-                            </button>
-                        </form>
-                    </div>
-                @endif
             </div>
         </div>
     </div>

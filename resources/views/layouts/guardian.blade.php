@@ -37,6 +37,10 @@
 
                             <span class="text-sm text-gray-600 hidden sm:inline">{{ Auth::user()->name }}</span>
 
+                            <a href="{{ route('parent.password.edit') }}" class="text-sm text-gray-600 hover:underline px-2">
+                                {{ __('messages.guardian_nav_change_password') }}
+                            </a>
+
                             <form method="POST" action="{{ route('parent.logout') }}">
                                 @csrf
                                 <button type="submit" class="text-sm text-red-600 hover:underline px-2">

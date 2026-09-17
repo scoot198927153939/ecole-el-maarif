@@ -938,5 +938,18 @@ return [
     'assessments_bulk_all_subjects_label' => 'Matières pour lesquelles des évaluations seront créées',
     'assessments_bulk_all_no_subjects' => 'Aucune matière n\'est encore appliquée au niveau de cette classe. Ajoutez-en d\'abord depuis la page "Matières et coefficients".',
     'flash_assessment_bulk_all_created' => ':count évaluations créées avec succès. :skipped matière(s) ignorée(s) car elles avaient déjà des évaluations.',
+    'users_password_confirmation_label' => 'Confirmation du mot de passe',
+    'users_password_leave_blank_placeholder' => 'Laisser vide pour ne pas changer le mot de passe',
+    'guardians_password_label' => 'Mot de passe',
+    'guardians_password_confirmation_label' => 'Confirmation du mot de passe',
+    'guardians_password_leave_blank_placeholder' => 'Laisser vide pour ne pas changer le mot de passe',
+    'guardian_change_password_title' => 'Changer le mot de passe',
+    'guardian_change_password_current_label' => 'Mot de passe actuel',
+    'guardian_change_password_new_label' => 'Nouveau mot de passe',
+    'guardian_change_password_confirm_label' => 'Confirmer le nouveau mot de passe',
+    'guardian_change_password_button' => 'Mettre à jour le mot de passe',
+    'guardian_change_password_success' => 'Mot de passe mis à jour avec succès.',
+    'guardian_change_password_current_wrong' => 'Le mot de passe actuel est incorrect.',
+    'guardian_nav_change_password' => 'Changer le mot de passe',
 
     ];

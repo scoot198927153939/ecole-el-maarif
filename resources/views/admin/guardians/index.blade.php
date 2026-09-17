@@ -14,15 +14,6 @@
                 </div>
             @endif
 
-            @if (session('guardian_credentials'))
-                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-900 rounded-lg">
-                    <p class="font-bold mb-2">{{ __('messages.guardian_credentials_flash_title') }}</p>
-                    <p>{{ __('messages.guardian_credentials_phone_label') }}: <span dir="ltr" class="font-mono font-bold">{{ session('guardian_credentials')['phone'] }}</span></p>
-                    <p>{{ __('messages.guardian_credentials_password_label') }}: <span dir="ltr" class="font-mono font-bold">{{ session('guardian_credentials')['password'] }}</span></p>
-                    <p class="text-sm text-blue-700 mt-2">{{ __('messages.guardian_credentials_note') }}</p>
-                </div>
-            @endif
-
             <div class="bg-white shadow-sm rounded-xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-bold">{{ __('messages.guardians_list_title') }}</h3>

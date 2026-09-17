@@ -32,8 +32,17 @@
                         @error('email') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="mb-4 p-3 bg-blue-50 border border-blue-100 rounded text-sm text-blue-800">
-                        {{ __('messages.users_password_invite_note') }}
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.password') }}</label>
+                        <input type="text" name="password" dir="ltr"
+                               class="w-full border rounded p-2" required minlength="8">
+                        @error('password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.users_password_confirmation_label') }}</label>
+                        <input type="text" name="password_confirmation" dir="ltr"
+                               class="w-full border rounded p-2" required minlength="8">
                     </div>
 
                     <div class="mb-4">

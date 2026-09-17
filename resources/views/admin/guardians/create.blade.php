@@ -54,6 +54,19 @@
                         @error('address') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.guardians_password_label') }} <span class="text-red-600">*</span></label>
+                        <input type="text" name="password" dir="ltr"
+                               class="w-full border rounded-lg p-2" required minlength="6">
+                        @error('password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.guardians_password_confirmation_label') }} <span class="text-red-600">*</span></label>
+                        <input type="text" name="password_confirmation" dir="ltr"
+                               class="w-full border rounded-lg p-2" required minlength="6">
+                    </div>
+
                     <div class="flex gap-2">
                         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                             {{ __('messages.save') }}

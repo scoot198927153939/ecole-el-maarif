@@ -28,6 +28,19 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.password') }}</label>
+                        <input type="text" name="password" dir="ltr" placeholder="{{ __('messages.users_password_leave_blank_placeholder') }}"
+                               class="w-full border rounded p-2" minlength="8">
+                        @error('password') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.users_password_confirmation_label') }}</label>
+                        <input type="text" name="password_confirmation" dir="ltr"
+                               class="w-full border rounded p-2" minlength="8">
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block font-medium mb-1">{{ __('messages.role') }}</label>
                         <select name="role" id="role-select" class="w-full border rounded p-2" required>
                             <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>{{ __('messages.users_role_admin') }}</option>

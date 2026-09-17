@@ -73,6 +73,8 @@ Route::prefix('parent')->name('parent.')->group(function () {
         Route::post('/logout', [\App\Http\Controllers\Guardian\AuthController::class, 'destroy'])->name('logout');
         Route::get('/dashboard', [\App\Http\Controllers\Guardian\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/students/{student}', [\App\Http\Controllers\Guardian\DashboardController::class, 'showStudent'])->name('students.show');
+        Route::get('/change-password', [\App\Http\Controllers\Guardian\PasswordController::class, 'edit'])->name('password.edit');
+        Route::put('/change-password', [\App\Http\Controllers\Guardian\PasswordController::class, 'update'])->name('password.update');
     });
 });
 
@@ -130,8 +132,6 @@ Route::get('/treasury/sources/{source}/transactions', [TreasuryController::class
 Route::post('/treasury/sources/{source}/transactions', [TreasuryController::class, 'storeTransaction'])->name('treasury.transactions.store');
 
 Route::resource('guardians', GuardianController::class)->except(['show']);
-Route::post('/guardians/{guardian}/regenerate-password', [GuardianController::class, 'regeneratePassword'])->name('guardians.regenerate-password');
-Route::post('/guardians/{guardian}/create-account', [GuardianController::class, 'createAccount'])->name('guardians.create-account');
 
 Route::resource('tuition-fees', TuitionFeeController::class)->except(['show']);
 Route::get('/fee-payments', [FeePaymentController::class, 'index'])->name('fee-payments.index');

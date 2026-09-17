@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Guardian;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class GuardianController extends Controller
@@ -31,11 +30,12 @@ class GuardianController extends Controller
             'whatsapp' => 'required|string|max:50',
             'phone2' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:500',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $guardian = Guardian::create($validated);
 
-        $plainPassword = $this->createLoginAccount($guardian);
+        $this->createLoginAccount($guardian, $validated['password']);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -46,11 +46,7 @@ class GuardianController extends Controller
         }
 
         return redirect()->route('admin.guardians.index')
-            ->with('success', __('messages.flash_guardian_created'))
-            ->with('guardian_credentials', [
-                'phone' => $guardian->phone1,
-                'password' => $plainPassword,
-            ]);
+            ->with('success', __('messages.flash_guardian_created'));
     }
 
     public function edit(Guardian $guardian)
@@ -67,6 +63,7 @@ class GuardianController extends Controller
             'whatsapp' => 'required|string|max:50',
             'phone2' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:500',
+            'password' => $guardian->user ? 'nullable|string|min:6|confirmed' : 'required|string|min:6|confirmed',
         ]);
 
         $guardian->update($validated);
@@ -76,39 +73,16 @@ class GuardianController extends Controller
                 'name' => $guardian->name,
                 'phone' => $guardian->phone1,
             ]);
+
+            if (! empty($validated['password'])) {
+                $guardian->user->update(['password' => bcrypt($validated['password'])]);
+            }
+        } else {
+            $this->createLoginAccount($guardian, $validated['password']);
         }
 
         return redirect()->route('admin.guardians.index')
             ->with('success', __('messages.flash_guardian_updated'));
-    }
-
-    public function regeneratePassword(Guardian $guardian)
-    {
-        if (! $guardian->user) {
-            return back()->with('error', __('messages.guardian_no_account_error'));
-        }
-
-        $plainPassword = Str::password(10, symbols: false);
-        $guardian->user->update(['password' => bcrypt($plainPassword)]);
-
-        return back()->with('guardian_credentials', [
-            'phone' => $guardian->phone1,
-            'password' => $plainPassword,
-        ]);
-    }
-
-    public function createAccount(Guardian $guardian)
-    {
-        if ($guardian->user) {
-            return back()->with('error', __('messages.guardian_account_already_exists_error'));
-        }
-
-        $plainPassword = $this->createLoginAccount($guardian);
-
-        return back()->with('guardian_credentials', [
-            'phone' => $guardian->phone1,
-            'password' => $plainPassword,
-        ]);
     }
 
     public function destroy(Guardian $guardian)
@@ -119,21 +93,17 @@ class GuardianController extends Controller
             ->with('success', __('messages.flash_guardian_deleted'));
     }
 
-    private function createLoginAccount(Guardian $guardian): string
+    private function createLoginAccount(Guardian $guardian, string $password): void
     {
-        $plainPassword = Str::password(10, symbols: false);
-
         $user = User::create([
             'name' => $guardian->name,
             'email' => 'guardian'.$guardian->id.'@parents.local',
             'phone' => $guardian->phone1,
-            'password' => bcrypt($plainPassword),
+            'password' => bcrypt($password),
             'role' => 'guardian',
             'locale' => app()->getLocale(),
         ]);
 
         $guardian->update(['user_id' => $user->id]);
-
-        return $plainPassword;
     }
 }

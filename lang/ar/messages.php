@@ -938,5 +938,18 @@ return [
     'assessments_bulk_all_subjects_label' => 'المواد التي سيتم إنشاء اختبارات لها',
     'assessments_bulk_all_no_subjects' => 'لا توجد مواد مطبّقة على مستوى هذا القسم بعد. أضفها من صفحة "المواد والضوارب" أولاً.',
     'flash_assessment_bulk_all_created' => 'تم إنشاء :count اختبار وامتحان بنجاح. تم تجاوز :skipped مادة لديها اختبارات مسبقاً.',
+    'users_password_confirmation_label' => 'تأكيد كلمة المرور',
+    'users_password_leave_blank_placeholder' => 'اتركه فارغاً لعدم تغيير كلمة المرور',
+    'guardians_password_label' => 'كلمة المرور',
+    'guardians_password_confirmation_label' => 'تأكيد كلمة المرور',
+    'guardians_password_leave_blank_placeholder' => 'اتركه فارغاً لعدم تغيير كلمة المرور',
+    'guardian_change_password_title' => 'تغيير كلمة المرور',
+    'guardian_change_password_current_label' => 'كلمة المرور الحالية',
+    'guardian_change_password_new_label' => 'كلمة المرور الجديدة',
+    'guardian_change_password_confirm_label' => 'تأكيد كلمة المرور الجديدة',
+    'guardian_change_password_button' => 'تحديث كلمة المرور',
+    'guardian_change_password_success' => 'تم تحديث كلمة المرور بنجاح.',
+    'guardian_change_password_current_wrong' => 'كلمة المرور الحالية غير صحيحة.',
+    'guardian_nav_change_password' => 'تغيير كلمة المرور',
 
     ];

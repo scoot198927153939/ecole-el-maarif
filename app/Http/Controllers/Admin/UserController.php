@@ -12,7 +12,6 @@ use App\Support\PermissionPresets;
 use App\Support\TeachingModules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -39,6 +38,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,supervisor,teacher',
             'phone' => 'required_if:role,teacher|nullable|string|max:255',
             'specialization' => 'required_if:role,teacher|nullable|string|max:255',
@@ -54,7 +54,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => bcrypt(Str::random(40)),
+            'password' => bcrypt($validated['password']),
             'role' => $validated['role'],
             'permissions' => $validated['role'] === 'admin' ? null : ($validated['permissions'] ?? []),
         ]);
@@ -62,9 +62,6 @@ class UserController extends Controller
         if ($validated['role'] === 'teacher') {
             $this->createTeacherRecord($user, $validated, $request);
         }
-
-        $token = Password::createToken($user);
-        $user->notify(new WelcomeSetPassword($token));
 
         return redirect()->route('admin.users.create')->with('success', __('messages.flash_user_created'));
     }
@@ -85,6 +82,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|in:admin,supervisor,teacher',
             'phone' => 'required_if:role,teacher|nullable|string|max:255',
             'specialization' => 'required_if:role,teacher|nullable|string|max:255',
@@ -103,6 +101,10 @@ class UserController extends Controller
         $user->email = $validated['email'];
         $user->role = $validated['role'];
         $user->permissions = $validated['role'] === 'admin' ? null : ($validated['permissions'] ?? []);
+
+        if (! empty($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
+        }
 
         $user->save();
 
