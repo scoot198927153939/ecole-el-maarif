@@ -19,7 +19,11 @@
                 <p class="text-4xl font-bold">{{ number_format($totalBalance, 2) }} {{ __('messages.currency') }}</p>
             </div>
 
-            <div class="flex justify-end mb-4">
+            <div class="flex justify-end gap-2 mb-4">
+                <a href="{{ route('admin.treasury.report') }}"
+                   class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
+                    {{ __('messages.treasury_report_link') }}
+                </a>
                 <a href="{{ route('admin.treasury.sources') }}"
                    class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
                     {{ __('messages.treasury_manage_sources_link') }}

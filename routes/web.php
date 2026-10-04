@@ -133,6 +133,8 @@ Route::post('/treasury/sources/{source}/transactions', [TreasuryController::clas
 Route::get('/treasury/sources/{source}/transactions/{transaction}/edit', [TreasuryController::class, 'editTransaction'])->name('treasury.transactions.edit');
 Route::put('/treasury/sources/{source}/transactions/{transaction}', [TreasuryController::class, 'updateTransaction'])->name('treasury.transactions.update');
 Route::delete('/treasury/sources/{source}/transactions/{transaction}', [TreasuryController::class, 'destroyTransaction'])->name('treasury.transactions.destroy');
+Route::get('/treasury/report', [\App\Http\Controllers\Admin\TreasuryReportController::class, 'monthly'])->name('treasury.report');
+Route::get('/treasury/report/export', [\App\Http\Controllers\Admin\TreasuryReportController::class, 'exportMonthly'])->name('treasury.report.export');
 
 Route::resource('guardians', GuardianController::class)->except(['show']);
 
