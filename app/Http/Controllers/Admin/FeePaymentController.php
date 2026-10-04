@@ -74,6 +74,7 @@ class FeePaymentController extends Controller
                 'class' => $enrollment->classRoom->name,
                 'number' => $enrollment->student->student_number,
             ]),
+            'category' => 'fee_payment',
             'transaction_date' => $validated['payment_date'],
             'document_path' => $photoPath,
             'recorded_by' => auth()->id(),

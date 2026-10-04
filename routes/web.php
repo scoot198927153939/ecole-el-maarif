@@ -130,6 +130,9 @@ Route::post('/treasury/sources', [TreasuryController::class, 'storeSource'])->na
 Route::delete('/treasury/sources/{source}', [TreasuryController::class, 'destroySource'])->name('treasury.sources.destroy');
 Route::get('/treasury/sources/{source}/transactions', [TreasuryController::class, 'transactions'])->name('treasury.transactions');
 Route::post('/treasury/sources/{source}/transactions', [TreasuryController::class, 'storeTransaction'])->name('treasury.transactions.store');
+Route::get('/treasury/sources/{source}/transactions/{transaction}/edit', [TreasuryController::class, 'editTransaction'])->name('treasury.transactions.edit');
+Route::put('/treasury/sources/{source}/transactions/{transaction}', [TreasuryController::class, 'updateTransaction'])->name('treasury.transactions.update');
+Route::delete('/treasury/sources/{source}/transactions/{transaction}', [TreasuryController::class, 'destroyTransaction'])->name('treasury.transactions.destroy');
 
 Route::resource('guardians', GuardianController::class)->except(['show']);
 
@@ -156,6 +159,7 @@ Route::resource('staff-advances', \App\Http\Controllers\Admin\StaffAdvanceContro
 Route::get('/payroll/{type}/{id}', [PayrollController::class, 'show'])->name('payroll.show');
 Route::post('/staff-advances/{staffAdvance}/deductions', [PayrollController::class, 'storeDeduction'])->name('payroll.deductions.store');
 Route::post('/payroll/payment-choice', [PayrollController::class, 'storePaymentChoice'])->name('payroll.payment-choice.store');
+Route::post('/payroll/payments', [PayrollController::class, 'storePayment'])->name('payroll.payments.store');
 });
 
 
@@ -197,6 +201,7 @@ Route::middleware(['auth', 'admin_or_teacher'])->group(function () {
     Route::put('/lesson-logs/{lessonLog}', [LessonLogController::class, 'update'])->name('lesson-logs.update');
     Route::delete('/lesson-logs/{lessonLog}', [LessonLogController::class, 'destroy'])->name('lesson-logs.destroy');
     Route::delete('/lesson-photos/{photo}', [LessonLogController::class, 'destroyPhoto'])->name('lesson-logs.photos.destroy');
+    Route::get('/lesson-logs/subjects/{assignment}/pdf', [LessonLogController::class, 'downloadPdf'])->name('lesson-logs.pdf');
 
     Route::get('/enrollments/{enrollment}/term1-pdf', [PdfController::class, 'term1Report'])->name('reports.term1.pdf');
     Route::get('/enrollments/{enrollment}/term2-pdf', [PdfController::class, 'term2Report'])->name('reports.term2.pdf');

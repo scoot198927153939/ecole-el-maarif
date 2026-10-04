@@ -76,6 +76,7 @@ class WithdrawnStudentController extends Controller
                 'class' => $enrollment->classRoom->name,
                 'number' => $enrollment->student->student_number,
             ]),
+            'category' => 'refund',
             'transaction_date' => $validated['refund_date'],
             'document_path' => $photoPath,
             'recorded_by' => auth()->id(),

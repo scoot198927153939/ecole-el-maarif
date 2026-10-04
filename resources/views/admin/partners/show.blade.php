@@ -56,6 +56,15 @@
                         <input type="date" name="withdrawal_date" value="{{ now()->format('Y-m-d') }}" class="w-full border rounded-lg p-2" required>
                     </div>
                     <div class="flex-1">
+                        <label class="block text-sm font-medium mb-1">{{ __('messages.payout_money_source_label') }}</label>
+                        <select name="money_source_id" class="w-full border rounded-lg p-2" required>
+                            <option value="">{{ __('messages.tuition_fees_select_generic_placeholder') }}</option>
+                            @foreach ($moneySources as $source)
+                                <option value="{{ $source->id }}">{{ $source->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex-1">
                         <label class="block text-sm font-medium mb-1">{{ __('messages.staff_advances_note_optional_label') }}</label>
                         <input type="text" name="note" class="w-full border rounded-lg p-2">
                     </div>

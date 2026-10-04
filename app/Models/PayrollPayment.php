@@ -5,33 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PartnerWithdrawal extends Model
+class PayrollPayment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'partner_id',
+        'staff_type',
+        'staff_id',
+        'year',
+        'month',
         'amount',
-        'withdrawal_date',
-        'note',
-        'recorded_by',
         'money_transaction_id',
+        'recorded_by',
     ];
 
     protected $casts = [
-        'withdrawal_date' => 'date',
         'amount' => 'decimal:2',
     ];
-
-    public function partner()
-    {
-        return $this->belongsTo(Partner::class);
-    }
-
-    public function recordedBy()
-    {
-        return $this->belongsTo(User::class, 'recorded_by');
-    }
 
     public function moneyTransaction()
     {

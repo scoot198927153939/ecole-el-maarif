@@ -43,6 +43,24 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block font-medium mb-1">{{ __('messages.treasury_category_label') }}</label>
+                        <select name="category" class="w-full border rounded-lg p-2" required>
+                            <option value="">{{ __('messages.tuition_fees_select_generic_placeholder') }}</option>
+                            <optgroup label="{{ __('messages.treasury_direction_in_badge') }}">
+                                @foreach (\App\Models\MoneyTransaction::MANUAL_CATEGORIES['in'] as $cat)
+                                    <option value="{{ $cat }}">{{ __('messages.treasury_category_'.$cat) }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="{{ __('messages.treasury_direction_out_badge') }}">
+                                @foreach (\App\Models\MoneyTransaction::MANUAL_CATEGORIES['out'] as $cat)
+                                    <option value="{{ $cat }}">{{ __('messages.treasury_category_'.$cat) }}</option>
+                                @endforeach
+                            </optgroup>
+                        </select>
+                        @error('category') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block font-medium mb-1">{{ __('messages.description') }}</label>
                         <input type="text" name="description" class="w-full border rounded-lg p-2" required>
                     </div>
@@ -72,9 +90,11 @@
                             <th class="p-2">{{ __('messages.date') }}</th>
                             <th class="p-2">{{ __('messages.type') }}</th>
                             <th class="p-2">{{ __('messages.amount') }}</th>
+                            <th class="p-2">{{ __('messages.treasury_category_label') }}</th>
                             <th class="p-2">{{ __('messages.description') }}</th>
                             <th class="p-2">{{ __('messages.treasury_col_document') }}</th>
                             <th class="p-2">{{ __('messages.treasury_col_recorded_by') }}</th>
+                            <th class="p-2">{{ __('messages.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,6 +109,7 @@
                                     @endif
                                 </td>
                                 <td class="p-2 font-bold">{{ number_format($t->amount, 2) }}</td>
+                                <td class="p-2">{{ $t->category_label }}</td>
                                 <td class="p-2">{{ $t->description }}</td>
                                 <td class="p-2">
                                     @if ($t->document_path)
@@ -98,10 +119,77 @@
                                     @endif
                                 </td>
                                 <td class="p-2">{{ $t->recordedBy->name }}</td>
+                                <td class="p-2 whitespace-nowrap space-x-2 space-x-reverse">
+                                    @if ($t->isManual())
+                                        <a href="{{ route('admin.treasury.transactions.edit', [$source, $t]) }}" class="text-green-600 hover:underline">{{ __('messages.edit') }}</a>
+                                        <form method="POST" action="{{ route('admin.treasury.transactions.destroy', [$source, $t]) }}" class="inline"
+                                              onsubmit="return confirm('{{ addslashes(__('messages.treasury_cancel_confirm')) }}');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:underline">{{ __('messages.treasury_cancel_button') }}</button>
+                                        </form>
+                                    @else
+                                        <span class="text-xs text-gray-400">{{ __('messages.treasury_system_entry_note') }}</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="p-4 text-center text-gray-500">{{ __('messages.treasury_no_transactions_empty') }}</td>
+                                <td colspan="8" class="p-4 text-center text-gray-500">{{ __('messages.treasury_no_transactions_empty') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-white shadow-sm rounded-xl p-6 mt-6">
+                <h3 class="text-lg font-bold mb-4">{{ __('messages.treasury_logs_title') }}</h3>
+                @php
+                    $fieldLabel = fn ($field) => __('messages.treasury_log_field_'.$field);
+                    $fmt = function ($field, $value) {
+                        return match ($field) {
+                            'category' => $value ? __('messages.treasury_category_'.$value) : __('messages.treasury_category_uncategorized'),
+                            'direction' => $value === 'in' ? __('messages.treasury_direction_in_badge') : __('messages.treasury_direction_out_badge'),
+                            default => $value ?? '-',
+                        };
+                    };
+                @endphp
+                <table class="w-full text-right border-collapse text-sm">
+                    <thead>
+                        <tr class="border-b bg-gray-50">
+                            <th class="p-2">{{ __('messages.date') }}</th>
+                            <th class="p-2">{{ __('messages.treasury_log_col_action') }}</th>
+                            <th class="p-2">{{ __('messages.treasury_col_recorded_by') }}</th>
+                            <th class="p-2">{{ __('messages.description') }}</th>
+                            <th class="p-2">{{ __('messages.treasury_log_col_details') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($logs as $log)
+                            <tr class="border-b align-top">
+                                <td class="p-2"><span dir="ltr">{{ $log->created_at->format('Y-m-d H:i') }}</span></td>
+                                <td class="p-2">
+                                    @if ($log->action === 'updated')
+                                        <span class="text-amber-600">{{ __('messages.treasury_log_action_updated') }}</span>
+                                    @else
+                                        <span class="text-red-600">{{ __('messages.treasury_log_action_cancelled') }}</span>
+                                    @endif
+                                </td>
+                                <td class="p-2">{{ $log->user?->name ?? '-' }}</td>
+                                <td class="p-2">{{ $log->description }}</td>
+                                <td class="p-2">
+                                    @if ($log->action === 'updated')
+                                        @foreach ($log->details as $field => $change)
+                                            <div>{{ $fieldLabel($field) }}: {{ $fmt($field, $change['old']) }} ← {{ $fmt($field, $change['new']) }}</div>
+                                        @endforeach
+                                    @else
+                                        <div>{{ $fieldLabel('amount') }}: {{ $log->details['amount'] ?? '-' }} — {{ $fmt('direction', $log->details['direction'] ?? null) }}</div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="p-4 text-center text-gray-500">{{ __('messages.treasury_logs_empty') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -55,6 +55,40 @@
                     </div>
                 @endforelse
             </div>
+
+            <div class="bg-white shadow-sm rounded-xl p-6 mt-6">
+                <h3 class="text-lg font-bold mb-4">{{ __('messages.treasury_breakdown_title') }}</h3>
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="border-b bg-gray-50">
+                            <th class="p-2">{{ __('messages.type') }}</th>
+                            <th class="p-2">{{ __('messages.treasury_category_label') }}</th>
+                            <th class="p-2">{{ __('messages.treasury_breakdown_count_col') }}</th>
+                            <th class="p-2">{{ __('messages.amount') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($categoryTotals as $row)
+                            <tr class="border-b">
+                                <td class="p-2">
+                                    @if ($row->direction === 'in')
+                                        <span class="text-green-600">{{ __('messages.treasury_direction_in_badge') }}</span>
+                                    @else
+                                        <span class="text-red-600">{{ __('messages.treasury_direction_out_badge') }}</span>
+                                    @endif
+                                </td>
+                                <td class="p-2">{{ $row->category ? __('messages.treasury_category_'.$row->category) : __('messages.treasury_category_uncategorized') }}</td>
+                                <td class="p-2">{{ $row->entries_count }}</td>
+                                <td class="p-2 font-bold">{{ number_format($row->total, 2) }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-gray-500">{{ __('messages.treasury_no_transactions_empty') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </x-app-layout>

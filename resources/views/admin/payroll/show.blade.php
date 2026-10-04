@@ -132,6 +132,42 @@
                 </table>
             </div>
 
+            <div class="bg-white shadow-sm rounded-xl p-6 mt-4">
+                <h3 class="font-bold mb-4">{{ __('messages.payroll_pay_section_title') }}</h3>
+
+                @if ($payment)
+                    <p class="text-green-700 font-medium">
+                        {{ __('messages.payroll_paid_status', [
+                            'date' => $payment->created_at->format('Y-m-d'),
+                            'source' => $payment->moneyTransaction?->moneySource?->name ?? '-',
+                            'amount' => number_format($payment->amount, 2),
+                        ]) }}
+                    </p>
+                @else
+                    <form method="POST" action="{{ route('admin.payroll.payments.store') }}" class="space-y-3">
+                        @csrf
+                        <input type="hidden" name="staff_type" value="{{ $type }}">
+                        <input type="hidden" name="staff_id" value="{{ $person->id }}">
+                        <input type="hidden" name="year" value="{{ $year }}">
+                        <input type="hidden" name="month" value="{{ $month }}">
+
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.payout_money_source_label') }}</label>
+                            <select name="money_source_id" class="w-full border rounded-lg p-2" required>
+                                <option value="">{{ __('messages.tuition_fees_select_generic_placeholder') }}</option>
+                                @foreach ($moneySources as $source)
+                                    <option value="{{ $source->id }}">{{ $source->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            {{ __('messages.payroll_pay_button', ['amount' => number_format($netPayable, 2)]) }}
+                        </button>
+                    </form>
+                @endif
+            </div>
+
         </div>
     </div>
 </x-app-layout>

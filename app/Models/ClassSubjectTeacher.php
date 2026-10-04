@@ -31,4 +31,9 @@ class ClassSubjectTeacher extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
+    public function lessonLogs()
+    {
+        return $this->hasMany(LessonLog::class, 'class_subject_teacher_id');
+    }
 }

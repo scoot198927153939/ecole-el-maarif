@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
+use App\Models\MoneySource;
 use App\Models\MoneyTransaction;
 use App\Models\Partner;
 use App\Models\PartnerWithdrawal;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PartnerController extends Controller
 {
@@ -20,7 +22,10 @@ class PartnerController extends Controller
             ->where('transaction_date', '>=', $yearStart)
             ->sum('amount');
 
+        $partnerWithdrawalTransactionIds = PartnerWithdrawal::whereNotNull('money_transaction_id')->pluck('money_transaction_id');
+
         $totalOut = MoneyTransaction::where('direction', 'out')
+            ->whereNotIn('id', $partnerWithdrawalTransactionIds)
             ->where('transaction_date', '>=', $yearStart)
             ->sum('amount');
 
@@ -80,7 +85,9 @@ class PartnerController extends Controller
 
         $withdrawals = $partner->withdrawals()->orderByDesc('withdrawal_date')->get();
 
-        return view('admin.partners.show', compact('partner', 'netProfit', 'entitled', 'withdrawals'));
+        $moneySources = MoneySource::all();
+
+        return view('admin.partners.show', compact('partner', 'netProfit', 'entitled', 'withdrawals', 'moneySources'));
     }
 
     public function storeWithdrawal(Request $request, Partner $partner)
@@ -89,12 +96,29 @@ class PartnerController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'withdrawal_date' => 'required|date',
             'note' => 'nullable|string|max:1000',
+            'money_source_id' => 'required|exists:money_sources,id',
         ]);
 
-        PartnerWithdrawal::create($validated + [
-            'partner_id' => $partner->id,
-            'recorded_by' => auth()->id(),
-        ]);
+        DB::transaction(function () use ($validated, $partner) {
+            $transaction = MoneyTransaction::create([
+                'money_source_id' => $validated['money_source_id'],
+                'direction' => 'out',
+                'amount' => $validated['amount'],
+                'description' => __('messages.treasury_desc_partner_withdrawal', [], 'ar').': '.$partner->name,
+                'category' => 'partner_withdrawal',
+                'transaction_date' => $validated['withdrawal_date'],
+                'recorded_by' => auth()->id(),
+            ]);
+
+            PartnerWithdrawal::create([
+                'partner_id' => $partner->id,
+                'amount' => $validated['amount'],
+                'withdrawal_date' => $validated['withdrawal_date'],
+                'note' => $validated['note'] ?? null,
+                'recorded_by' => auth()->id(),
+                'money_transaction_id' => $transaction->id,
+            ]);
+        });
 
         return redirect()->route('admin.partners.show', $partner)->with('success', __('messages.flash_partner_withdrawal_created'));
     }

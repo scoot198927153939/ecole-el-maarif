@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\MoneySource;
+use App\Models\MoneyTransaction;
+use App\Models\PayrollPayment;
 use App\Models\StaffAdvance;
 use App\Models\StaffAdvanceDeduction;
 use App\Models\StaffMember;
 use App\Models\Teacher;
 use App\Models\TeacherAttendanceSession;
+use App\Models\TeacherPaymentChoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PayrollController extends Controller
 {
@@ -126,10 +131,20 @@ public function storePaymentChoice(Request $request)
 
         $netPayable = $grossSalary - $thisMonthDeduction;
 
+        $payment = PayrollPayment::where('staff_type', $type)
+            ->where('staff_id', $id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->with('moneyTransaction.moneySource')
+            ->first();
+
+        $moneySources = MoneySource::all();
+
         return view('admin.payroll.show', compact(
             'person', 'type', 'year', 'month', 'grossSalary', 'hoursWorked', 'lateMinutes',
             'scheduledSessionsPerWeek', 'scheduledHoursThisMonth',
-            'advances', 'totalAdvanceTaken', 'totalAdvanceRemaining', 'thisMonthDeduction', 'netPayable'
+            'advances', 'totalAdvanceTaken', 'totalAdvanceRemaining', 'thisMonthDeduction', 'netPayable',
+            'payment', 'moneySources'
         ));
     }
 
@@ -151,5 +166,79 @@ public function storePaymentChoice(Request $request)
         );
 
         return back()->with('success', __('messages.flash_payroll_deduction_created'));
+    }
+
+    public function storePayment(Request $request)
+    {
+        $validated = $request->validate([
+            'staff_type' => 'required|in:teacher,staff_member',
+            'staff_id' => 'required|integer',
+            'year' => 'required|integer',
+            'month' => 'required|integer|between:1,12',
+            'money_source_id' => 'required|exists:money_sources,id',
+        ]);
+
+        $type = $validated['staff_type'];
+        $id = $validated['staff_id'];
+        $year = $validated['year'];
+        $month = $validated['month'];
+
+        $person = $type === 'teacher' ? Teacher::findOrFail($id) : StaffMember::findOrFail($id);
+
+        $alreadyPaid = PayrollPayment::where('staff_type', $type)
+            ->where('staff_id', $id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->exists();
+
+        if ($alreadyPaid) {
+            return back()->withErrors(['payment' => __('messages.flash_payroll_already_paid_error')]);
+        }
+
+        if ($type === 'teacher' && $person->is_partner) {
+            $choice = TeacherPaymentChoice::where('teacher_id', $id)
+                ->where('year', $year)
+                ->where('month', $month)
+                ->value('choice');
+
+            if ($choice !== 'salary') {
+                return back()->withErrors(['payment' => __('messages.flash_payroll_partner_not_salary_error')]);
+            }
+        }
+
+        $deducted = StaffAdvanceDeduction::whereIn('staff_advance_id', StaffAdvance::where('staff_type', $type)->where('staff_id', $id)->pluck('id'))
+            ->where('year', $year)
+            ->where('month', $month)
+            ->sum('amount');
+
+        $netPayable = round($person->calculatedSalary($year, $month) - $deducted, 2);
+
+        if ($netPayable <= 0) {
+            return back()->withErrors(['payment' => __('messages.flash_payroll_nothing_to_pay_error')]);
+        }
+
+        DB::transaction(function () use ($validated, $person, $type, $id, $year, $month, $netPayable) {
+            $transaction = MoneyTransaction::create([
+                'money_source_id' => $validated['money_source_id'],
+                'direction' => 'out',
+                'amount' => $netPayable,
+                'description' => __('messages.treasury_desc_salary', [], 'ar').': '.$person->first_name.' '.$person->last_name.' ('.$month.'/'.$year.')',
+                'category' => 'salary',
+                'transaction_date' => now()->toDateString(),
+                'recorded_by' => auth()->id(),
+            ]);
+
+            PayrollPayment::create([
+                'staff_type' => $type,
+                'staff_id' => $id,
+                'year' => $year,
+                'month' => $month,
+                'amount' => $netPayable,
+                'money_transaction_id' => $transaction->id,
+                'recorded_by' => auth()->id(),
+            ]);
+        });
+
+        return back()->with('success', __('messages.flash_payroll_paid'));
     }
 }

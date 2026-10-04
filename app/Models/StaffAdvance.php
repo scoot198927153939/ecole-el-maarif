@@ -16,6 +16,7 @@ class StaffAdvance extends Model
         'date_given',
         'note',
         'recorded_by',
+        'money_transaction_id',
     ];
 
     protected $casts = [
@@ -31,6 +32,11 @@ class StaffAdvance extends Model
     public function recordedBy()
     {
         return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    public function moneyTransaction()
+    {
+        return $this->belongsTo(MoneyTransaction::class);
     }
 
     public function staffMember()

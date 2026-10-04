@@ -58,6 +58,7 @@ class TeachingModules
             'lesson-logs.update' => 'lesson_logs',
             'lesson-logs.destroy' => 'lesson_logs',
             'lesson-logs.photos.destroy' => 'lesson_logs',
+            'lesson-logs.pdf' => 'lesson_logs',
 
             'attendance.select' => 'attendance_take',
             'attendance.schedules' => 'attendance_take',
